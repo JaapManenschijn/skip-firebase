@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: LGPL-3.0-only WITH LGPL-3.0-linking-exception
 #if !SKIP_BRIDGE
 #if SKIP
-import Foundation
+import SkipFoundation
 import SkipFirebaseCore
 import kotlinx.coroutines.tasks.await
 
@@ -42,21 +42,25 @@ public final class RemoteConfigSettings {
 
     public static func remoteConfigSettings(minimumFetchInterval: Int) -> RemoteConfigSettings {
         var builder = com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings.Builder()
-            .setMinimumFetchIntervalInSeconds(minimumFetchInterval)
+            .setMinimumFetchIntervalInSeconds(minimumFetchInterval.toLong())
         return RemoteConfigSettings(remoteConfigSettings: builder.build())
     }
 }
 
-public final class RemoteConfigValue {
+public final class RemoteConfigValue: KotlinConverting<com.google.firebase.remoteconfig.FirebaseRemoteConfigValue> {
     public let remoteConfigValue: com.google.firebase.remoteconfig.FirebaseRemoteConfigValue
     
     public init(remoteConfigValue: com.google.firebase.remoteconfig.FirebaseRemoteConfigValue) {
         self.remoteConfigValue = remoteConfigValue
     }
+
+    public override func kotlin(nocopy: Bool = false) -> com.google.firebase.remoteconfig.FirebaseRemoteConfigValue {
+        remoteConfigValue
+    }
     
-    public var dataValue: NSData {
-        let bytes = remoteConfigValue.asByteArray()
-        return NSData(bytes: bytes, length: bytes.count)
+    public var dataValue: Data {
+        let data = remoteConfigValue.asByteArray()
+        return Data(platformValue: data)
     }
     
     public var stringValue: String {

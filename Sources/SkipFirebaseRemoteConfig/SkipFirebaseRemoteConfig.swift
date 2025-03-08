@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: LGPL-3.0-only WITH LGPL-3.0-linking-exception
 #if !SKIP_BRIDGE
 #if SKIP
+import Foundation
 import SkipFirebaseCore
 import kotlinx.coroutines.tasks.await
 
@@ -12,15 +13,15 @@ public final class RemoteConfig {
     }
 
     public static func remoteConfig() -> RemoteConfig {
-        RemoteConfig(remoteconfig: com.google.firebase.remoteconfig.FirebaseRemoteConfig.getInstance())
+        RemoteConfig(remoteConfig: com.google.firebase.remoteconfig.FirebaseRemoteConfig.getInstance())
     }
 
     public static func remoteConfig(app: FirebaseApp) -> RemoteConfig {
-        RemoteConfig(remoteconfig: com.google.firebase.remoteconfig.FirebaseRemoteConfig.getInstance(app.app))
+        RemoteConfig(remoteConfig: com.google.firebase.remoteconfig.FirebaseRemoteConfig.getInstance(app.app))
     }
     
     public func setSettings(remoteConfigSettings: RemoteConfigSettings) async throws {
-        remoteConfig.setConfigSettingsAsync(settings: remoteConfigSettings.settings).await()
+        remoteConfig.setConfigSettingsAsync(remoteConfigSettings.settings).await()
     }
     
     public func fetchAndActivate() async throws {
@@ -28,7 +29,7 @@ public final class RemoteConfig {
     }
     
     public func configValue(forKey: String) -> RemoteConfigValue {
-        .init(remoteConfigValue: remoteConfig.getValue(key: forKey))
+        .init(remoteConfigValue: remoteConfig.getValue(forKey))
     }
 }
 
@@ -41,15 +42,15 @@ public final class RemoteConfigSettings {
 
     public static func remoteConfigSettings(minimumFetchInterval: Int) -> RemoteConfigSettings {
         var builder = com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings.Builder()
-            .setMinimumFetchIntervalInSeconds(duration: minimumFetchInterval)
-        return builder.build()
+            .setMinimumFetchIntervalInSeconds(minimumFetchInterval)
+        return RemoteConfigSettings(remoteConfigSettings: builder.build())
     }
 }
 
 public final class RemoteConfigValue {
-    public let remoteConfigValue: com.google.firebase.remoteConfig.FirebaseRemoteConfigValue
+    public let remoteConfigValue: com.google.firebase.remoteconfig.FirebaseRemoteConfigValue
     
-    public init(remoteConfigValue: com.google.firebase.remoteConfig.FirebaseRemoteConfigValue) {
+    public init(remoteConfigValue: com.google.firebase.remoteconfig.FirebaseRemoteConfigValue) {
         self.remoteConfigValue = remoteConfigValue
     }
     
@@ -64,10 +65,6 @@ public final class RemoteConfigValue {
     
     public var boolValue: Bool {
         return remoteConfigValue.asBoolean()
-    }
-    
-    public var numberValue: NSNumber {
-        return NSNumber(value: remoteConfigValue.asDouble())
     }
 }
 #endif

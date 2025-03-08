@@ -18,6 +18,57 @@ public final class RemoteConfig {
     public static func remoteConfig(app: FirebaseApp) -> RemoteConfig {
         RemoteConfig(remoteconfig: com.google.firebase.remoteconfig.FirebaseRemoteConfig.getInstance(app.app))
     }
+    
+    public func setSettings(remoteConfigSettings: RemoteConfigSettings) async throws {
+        remoteConfig.setConfigSettingsAsync(settings: remoteConfigSettings.remoteConfigSettings).await()
+    }
+    
+    public func fetchAndActivate() async throws {
+        remoteconfig.fetchAndActivate().await()
+    }
+    
+    public func configValue(forKey: String) -> RemoteConfigValue {
+        .init(remoteConfigValue: remoteConfig.getValue(key: forKey))
+    }
+}
+
+public final class RemoteConfigSettings {
+    public let remoteConfigSettings: com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
+
+    public init(remoteConfigSettings: com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings) {
+        self.remoteConfigSettings = remoteConfigSettings
+    }
+
+    public static func remoteConfigSettings(minimumFetchInterval: Int) -> RemoteConfigSettings {
+        var builder = com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings.Builder()
+            .setMinimumFetchIntervalInSeconds(duration: minimumFetchInterval)
+        return builder.build()
+    }
+}
+
+public final class RemoteConfigValue {
+    public let remoteConfigValue: com.google.firebase.remoteConfig.FirebaseRemoteConfigValue
+    
+    public init(remoteConfigValue: com.google.firebase.remoteConfig.FirebaseRemoteConfigValue) {
+        self.remoteConfigValue = remoteConfigValue
+    }
+    
+    public var dataValue: NSData {
+        let bytes = remoteConfigValue.asByteArray()
+        return NSData(bytes: bytes, length: bytes.count)
+    }
+    
+    public var stringValue: String {
+        return remoteConfigValue.asString()
+    }
+    
+    public var boolValue: Bool {
+        return remoteConfigValue.asBoolean()
+    }
+    
+    public var numberValue: NSNumber {
+        return NSNumber(value: remoteConfigValue.asDouble())
+    }
 }
 #endif
 #endif

@@ -5,10 +5,10 @@ import SkipFirebaseCore
 import kotlinx.coroutines.tasks.await
 
 public final class RemoteConfig {
-    public let remoteconfig: com.google.firebase.remoteconfig.FirebaseRemoteConfig
+    public let remoteConfig: com.google.firebase.remoteconfig.FirebaseRemoteConfig
 
-    public init(remoteconfig: com.google.firebase.remoteconfig.FirebaseRemoteConfig) {
-        self.remoteconfig = remoteconfig
+    public init(remoteConfig: com.google.firebase.remoteconfig.FirebaseRemoteConfig) {
+        self.remoteConfig = remoteConfig
     }
 
     public static func remoteConfig() -> RemoteConfig {
@@ -20,11 +20,11 @@ public final class RemoteConfig {
     }
     
     public func setSettings(remoteConfigSettings: RemoteConfigSettings) async throws {
-        remoteConfig.setConfigSettingsAsync(settings: remoteConfigSettings.remoteConfigSettings).await()
+        remoteConfig.setConfigSettingsAsync(settings: remoteConfigSettings.settings).await()
     }
     
     public func fetchAndActivate() async throws {
-        remoteconfig.fetchAndActivate().await()
+        remoteConfig.fetchAndActivate().await()
     }
     
     public func configValue(forKey: String) -> RemoteConfigValue {
@@ -33,10 +33,10 @@ public final class RemoteConfig {
 }
 
 public final class RemoteConfigSettings {
-    public let remoteConfigSettings: com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
+    public let settings: com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 
     public init(remoteConfigSettings: com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings) {
-        self.remoteConfigSettings = remoteConfigSettings
+        self.settings = remoteConfigSettings
     }
 
     public static func remoteConfigSettings(minimumFetchInterval: Int) -> RemoteConfigSettings {
